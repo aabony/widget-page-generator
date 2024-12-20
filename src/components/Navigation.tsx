@@ -11,6 +11,7 @@ export function Navigation() {
         <div className="space-x-6 text-white/80">
           <a href="#" className="hover:text-white">Home</a>
           <a href="#" className="hover:text-white">Our Mission</a>
+            <a href="/page-generator" className="hover:text-white">Page Generator</a>
         </div>
       </div>
       <div className="flex items-center space-x-4">
