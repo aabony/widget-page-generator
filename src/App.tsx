@@ -1,37 +1,9 @@
 import { useState } from 'react';
+import { themes, pageStyles } from './utils/themes.js';
 
-// Themes object defined at the top level
-const themes = {
-    modern: {
-        name: 'Modern Minimal',
-        styles: {
-            headerGradientStart: '#ffffff',
-            headerGradientEnd: '#ffffff',
-            backgroundColor: '#fafafa',
-            textColor: '#171717'
-        }
-    },
-    gradient: {
-        name: 'Gradient Pop',
-        styles: {
-            headerGradientStart: '#FF6B6B',
-            headerGradientEnd: '#4ECDC4',
-            backgroundColor: '#ffffff',
-            textColor: '#ffffff'
-        }
-    },
-    dark: {
-        name: 'Dark Mode',
-        styles: {
-            headerGradientStart: '#1a1a1a',
-            headerGradientEnd: '#2d2d2d',
-            backgroundColor: '#000000',
-            textColor: '#ffffff'
-        }
-    }
-};
 
 function App() {
+    const [showPreview, setShowPreview] = useState(false);
     const [selectedTheme, setSelectedTheme] = useState('modern');
     const [pageConfig, setPageConfig] = useState({
         profilePic: '',
@@ -50,7 +22,6 @@ function App() {
         ]
     });
 
-    // Helper functions
     const addSection = () => {
         setPageConfig(prev => ({
             ...prev,
@@ -93,12 +64,49 @@ function App() {
     <title>${pageConfig.title}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Styles here */
+        ${pageStyles}
+        body {
+            background: ${theme.styles.backgroundColor};
+            color: ${theme.styles.textColor};
+        }
+        header {
+            background: linear-gradient(135deg, ${theme.styles.headerGradientStart}, ${theme.styles.headerGradientEnd});
+        }
     </style>
     ${pageConfig.sections.map(section => section.headCode).join('\n')}
 </head>
 <body>
-    <!-- Body content here -->
+    <header>
+        ${pageConfig.profilePic ? `<img src="${pageConfig.profilePic}" alt="Profile" class="header-img">` : ''}
+        <h1>${pageConfig.title}</h1>
+        <p>${pageConfig.subtitle}</p>
+    </header>
+    
+    <div class="attention-ribbon">
+        ${pageConfig.ribbonText}
+    </div>
+
+    <div class="content">
+        ${pageConfig.sections.map(section => `
+            <div class="section">
+                ${section.title ? `<h2>${section.title}</h2>` : ''}
+                <div id="${section.widgetId}">${section.bodyCode}</div>
+            </div>
+        `).join('')}
+    </div>
+
+    <footer>
+        <div class="social-links">
+            ${pageConfig.socialLinks.map(link =>
+            link.url ? `<a href="${link.url}" class="social-link" target="_blank">
+                <i class="fab fa-${link.platform === 'x' ? 'x-twitter' : link.platform}"></i>
+              </a>` : ''
+        ).join('')}
+        </div>
+        <div class="footer-text">
+            ${pageConfig.footerText}
+        </div>
+    </footer>
 </body>
 </html>`;
     };
@@ -154,6 +162,21 @@ function App() {
                                 className="mt-1 w-full border rounded-lg p-2"
                             />
                         </div>
+                    </div>
+                </div>
+
+                {/* Attention Ribbon */}
+                <div className="bg-white rounded-lg shadow p-6">
+                    <h2 className="text-2xl font-bold mb-4">Attention Ribbon</h2>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Ribbon Text (supports emojis)</label>
+                        <input
+                            type="text"
+                            value={pageConfig.ribbonText}
+                            onChange={(e) => setPageConfig(prev => ({ ...prev, ribbonText: e.target.value }))}
+                            placeholder="Enter attention-grabbing text with emojis"
+                            className="mt-1 w-full border rounded-lg p-2"
+                        />
                     </div>
                 </div>
 
@@ -271,17 +294,65 @@ function App() {
                     </div>
                 </div>
 
-                {/* Generate Button */}
-                <button
-                    onClick={() => {
-                        const html = generateHTML();
-                        // Here you can handle the generated HTML
-                        console.log(html);
-                    }}
-                    className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                >
-                    Generate Page
-                </button>
+                {/* Footer Content */}
+                <div className="bg-white rounded-lg shadow p-6">
+                    <h2 className="text-2xl font-bold mb-4">Footer Content</h2>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Footer Text</label>
+                        <textarea
+                            value={pageConfig.footerText}
+                            onChange={(e) => setPageConfig(prev => ({ ...prev, footerText: e.target.value }))}
+                            placeholder="Enter footer content"
+                            className="mt-1 w-full border rounded-lg p-2 h-32"
+                        />
+                    </div>
+                </div>
+
+                {/* Preview & Generate Buttons */}
+                <div className="flex gap-4">
+                    <button
+                        onClick={() => setShowPreview(true)}
+                        className="flex-1 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                    >
+                        Preview
+                    </button>
+                    <button
+                        onClick={() => {
+                            const html = generateHTML();
+                            const blob = new Blob([html], { type: 'text/html' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'landing-page.html';
+                            a.click();
+                            URL.revokeObjectURL(url);
+                        }}
+                        className="flex-1 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+                    >
+                        Generate Page
+                    </button>
+                </div>
+
+                {/* Preview Modal */}
+                {showPreview && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] overflow-hidden">
+                            <div className="p-4 border-b flex justify-between items-center">
+                                <h3 className="text-lg font-semibold">Preview</h3>
+                                <button onClick={() => setShowPreview(false)} className="text-gray-500 hover:text-gray-700">
+                                    Close
+                                </button>
+                            </div>
+                            <div className="p-4 h-[80vh] overflow-auto">
+                                <iframe
+                                    srcDoc={generateHTML()}
+                                    className="w-full h-full border rounded"
+                                    title="Preview"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
