@@ -1,34 +1,31 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 
-const SECRET = process.env.SECRET;
+const SECRET = new TextEncoder().encode(process.env.SECRET);
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+export async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
 
-  if (pathname === '/login') {
-    return NextResponse.next();
-  }
-
+    if (pathname === '/login') {
+        return NextResponse.next();
+    }
 
     const token = request.cookies.get('token')?.value;
 
     if (!token) {
-      return NextResponse.redirect(new URL('/login', request.nextUrl.origin));
+        return NextResponse.redirect(new URL('/login', request.nextUrl.origin));
     }
 
     try {
-      jwt.verify(token, SECRET!);
+        await jwtVerify(token, SECRET);
+        return NextResponse.next();
     } catch (error) {
-      console.error('Invalid token:', error.message);
-      return NextResponse.redirect(new URL('/login', request.nextUrl.origin));
+        console.error('Invalid token:', error.message);
+        return NextResponse.redirect(new URL('/login', request.nextUrl.origin));
     }
-
-
-  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/edit/:path*',  '/',],
+    matcher: '/:path*',
 };

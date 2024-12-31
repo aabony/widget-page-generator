@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import { SignJWT } from 'jose';
 
 const prisma = new PrismaClient();
-const SECRET = process.env.SECRET;
+const SECRET = new TextEncoder().encode(process.env.SECRET);
 
 export async function POST(req: Request) {
   try {
@@ -38,26 +38,21 @@ export async function POST(req: Request) {
       );
     }
 
-    const token = jwt.sign(
-        {
-          userId: user.id,
-          email: user.email,
-          role: user.role.name,
-        },
-        SECRET,
-        { expiresIn: '12h' }
-    );
+    const token = await new SignJWT({
+      userId: user.id,
+      email: user.email,
+      role: user.role.name,
+    })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setExpirationTime('12h')
+        .sign(SECRET);
 
-    // Устанавливаем токен в HTTP-only cookie
-    const response = NextResponse.json({
-      message: 'Login successful',
-    });
-
+    const response = NextResponse.json({ message: 'Login successful' });
     response.cookies.set('token', token, {
-      httpOnly: true, // Доступен только серверу
-      secure: process.env.NODE_ENV === 'production', // Только HTTPS в продакшене
-      maxAge: 12 * 60 * 60, // 12 часов
-      path: '/', // Доступен на всех маршрутах
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 12 * 60 * 60,
+      path: '/',
     });
 
     return response;

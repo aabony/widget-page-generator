@@ -20,13 +20,11 @@ export default function Login() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        credentials: 'include',
       });
 
       if (response.ok) {
-        const data = await response.json();
-        // Сохранение токена в localStorage
-        localStorage.setItem('token', data.token);
-        router.push('/admin'); // Перенаправление в админ-панель
+        router.push('/admin');
       } else {
         const errorData = await response.json();
         setError(errorData.message || 'Invalid credentials');
