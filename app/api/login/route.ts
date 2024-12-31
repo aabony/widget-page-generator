@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
-const SECRET = 'your-secret-key'; // Измените на свой безопасный секретный ключ
+const SECRET = process.env.SECRET;
 
 export async function POST(req: Request) {
   try {
@@ -17,7 +17,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Найти пользователя по email
     const user = await prisma.user.findUnique({
       where: { email },
       include: { role: true },
@@ -30,7 +29,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Проверка пароля
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -39,7 +37,6 @@ export async function POST(req: Request) {
           { status: 401 }
       );
     }
-
 
     const token = jwt.sign(
         {
@@ -51,10 +48,19 @@ export async function POST(req: Request) {
         { expiresIn: '12h' }
     );
 
-    return NextResponse.json({
-      token,
+    // Устанавливаем токен в HTTP-only cookie
+    const response = NextResponse.json({
       message: 'Login successful',
     });
+
+    response.cookies.set('token', token, {
+      httpOnly: true, // Доступен только серверу
+      secure: process.env.NODE_ENV === 'production', // Только HTTPS в продакшене
+      maxAge: 12 * 60 * 60, // 12 часов
+      path: '/', // Доступен на всех маршрутах
+    });
+
+    return response;
   } catch (error) {
     console.error(error);
     return NextResponse.json(
