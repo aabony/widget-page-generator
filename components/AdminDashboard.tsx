@@ -138,7 +138,8 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4 whitespace-nowrap">{page.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <Link href={page.url} className="text-blue-600 hover:text-blue-900" target="_blank">
-                          {page.url}
+                          {/*{page.url}*/}
+                          link
                         </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
