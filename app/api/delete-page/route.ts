@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 
 export async function DELETE(req: Request) {
     try {
-        // Извлекаем тело запроса
         const body = await req.json();
         const { name } = body;
 
@@ -13,7 +12,6 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ message: 'Page name is required' }, { status: 400 });
         }
 
-        // Удаляем страницу и каскадно все связанные офферы
         const deletedPage = await prisma.page.delete({
             where: { name },
         });

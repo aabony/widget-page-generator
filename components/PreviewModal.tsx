@@ -7,6 +7,7 @@ interface PreviewModalProps {
 }
 
 export default function PreviewModal({ isOpen, onClose, html }: PreviewModalProps) {
+  console.log(html)
   if (!isOpen) return null
 
   return (

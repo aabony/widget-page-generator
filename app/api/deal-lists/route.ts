@@ -7,7 +7,6 @@ const SECRET = new TextEncoder().encode(process.env.SECRET);
 
 export async function GET(req: Request) {
     try {
-        // Извлекаем cookies из заголовков
         const cookies = req.headers.get('cookie') || '';
         const tokenCookie = cookies
             .split(';')

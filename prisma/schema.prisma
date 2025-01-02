@@ -25,6 +25,10 @@ model User {
   pages       Page[]
   @@map("users")
 }
+type Links {
+  platform String
+  url  String
+}
 model Page {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   name       String   @unique
@@ -36,6 +40,7 @@ model Page {
   profilePic String?
   theme      String
   userId     String
+  socialLinks Links[]
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt

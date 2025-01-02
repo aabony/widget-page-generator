@@ -137,9 +137,9 @@ export default function AdminDashboard() {
                     <tr key={page.name}>
                       <td className="px-6 py-4 whitespace-nowrap">{page.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {/*<Link href={page.url} className="text-blue-600 hover:text-blue-900" target="_blank">*/}
-                        {/*  {page.url}*/}
-                        {/*</Link>*/}
+                        <Link href={page.url} className="text-blue-600 hover:text-blue-900" target="_blank">
+                          {page.url}
+                        </Link>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {new Date(page.lastModified).toLocaleString()}

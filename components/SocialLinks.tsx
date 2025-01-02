@@ -25,7 +25,7 @@ export default function SocialLinks({ pageConfig, setPageConfig }) {
     <div className="bg-white rounded-lg shadow p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Social Links</h2>
-        <button 
+        <button
           onClick={addSocialLink}
           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
         >
@@ -34,7 +34,7 @@ export default function SocialLinks({ pageConfig, setPageConfig }) {
       </div>
       <p className="mb-4 text-sm text-gray-600">These links will appear in a ribbon below your profile information.</p>
       <div className="space-y-4">
-        {pageConfig.socialLinks.map((link, index) => (
+        {pageConfig?.socialLinks?.map((link, index) => (
           <div key={index} className="border rounded-lg p-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -60,7 +60,7 @@ export default function SocialLinks({ pageConfig, setPageConfig }) {
                     placeholder={`https://${link.platform === 'x' ? 'x.com' : link.platform + '.com'}/username`}
                     className="mt-1 w-full border rounded-lg p-2"
                   />
-                  <button 
+                  <button
                     onClick={() => removeSocialLink(index)}
                     className="mt-1 text-red-500 hover:text-red-700"
                   >

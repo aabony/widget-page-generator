@@ -27,7 +27,7 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
         ribbonText: '🎯 Check out these amazing deals! 🎁',
         footerText: 'Lorem ipsum dolor sit amet © 2024',
         socialLinks: [],
-        sections: [],
+        offers: [],
         dealInBioName: '',
       }
   );
@@ -108,7 +108,7 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
   </header>
   <div class="attention-ribbon">${pageConfig.ribbonText}</div>
   <div class="card-container">
-    ${pageConfig.sections
+    ${pageConfig.offers
         .map(
             (section) => `
       <div class="card">
@@ -137,17 +137,22 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
     }
 
     setIsSaving(true);
-    const html = generateHTML();
     try {
-      const response = await fetch('/api/savepage', {
+      const response = await fetch('/api/save-page', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           name: pageConfig.dealInBioName,
-          html: html,
-          config: { ...pageConfig, theme: selectedTheme },
+          title: pageConfig.title,
+          subtitle: pageConfig.subtitle,
+          ribbonText: pageConfig.ribbonText,
+          footerText: pageConfig.footerText,
+          profilePic: pageConfig.profilePic,
+          theme: selectedTheme,
+          socialLinks: pageConfig.socialLinks,
+          offers: pageConfig.offers,
         }),
       });
 
@@ -167,6 +172,7 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
       setIsSaving(false);
     }
   };
+
 
   const downloadHTML = () => {
     const html = generateHTML();

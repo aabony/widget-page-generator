@@ -1,16 +1,16 @@
 import React from 'react';
 
-export default function ContentSections({ pageConfig, setPageConfig }) {
+export default function Contentoffers({ pageConfig, setPageConfig }) {
   const addCard = () => {
     setPageConfig((prev) => ({
       ...prev,
-      sections: [
-        ...prev.sections,
+      offers: [
+        ...prev.offers,
         {
           title: 'New Card Title',
           subtitle: 'Subtitle goes here',
           description: 'Add a short description here.',
-          imageSrc: 'https://via.placeholder.com/300x150', // Placeholder image
+          imageSrc: 'https://via.placeholder.com/300x150',
           buttonText: 'Download Free',
           buttonLink: '#',
         },
@@ -19,22 +19,22 @@ export default function ContentSections({ pageConfig, setPageConfig }) {
   };
 
   const updateCard = (index, field, value) => {
-    const updatedSections = [...pageConfig.sections];
-    updatedSections[index][field] = value;
-    setPageConfig((prev) => ({ ...prev, sections: updatedSections }));
+    const updatedoffers = [...pageConfig.offers];
+    updatedoffers[index][field] = value;
+    setPageConfig((prev) => ({ ...prev, offers: updatedoffers }));
   };
 
   const removeCard = (index) => {
     setPageConfig((prev) => ({
       ...prev,
-      sections: prev.sections.filter((_, i) => i !== index),
+      offers: prev.offers.filter((_, i) => i !== index),
     }));
   };
 
   return (
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">Content Sections</h2>
+          <h2 className="text-2xl font-bold">Content offers</h2>
           <button
               onClick={addCard}
               className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
@@ -43,7 +43,7 @@ export default function ContentSections({ pageConfig, setPageConfig }) {
           </button>
         </div>
         <div className="space-y-6">
-          {pageConfig.sections.map((section, index) => (
+          {pageConfig?.offers?.map((section, index) => (
               <div key={index} className="border rounded-lg p-4 space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">

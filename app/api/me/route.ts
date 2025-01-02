@@ -1,37 +1,49 @@
 import { NextResponse } from 'next/server';
-import { verifyToken, DecodedToken } from '../../../utils/auth';
 import { PrismaClient } from '@prisma/client';
+import { jwtVerify } from 'jose';
 
 const prisma = new PrismaClient();
+const SECRET_KEY = new TextEncoder().encode(process.env.SECRET);
 
 export async function GET(req: Request) {
-    const authHeader = req.headers.get('Authorization');
-
-    if (!authHeader) {
-        const url = new URL('/login', req.url); // Формируем абсолютный URL для редиректа
-        return NextResponse.redirect(url, 302);
-    }
-
-    const token = authHeader.split(' ')[1];
-
-    const decoded: DecodedToken | null = verifyToken(token);
-
-    if (!decoded) {
-        const url = new URL('/login', req.url); // Формируем абсолютный URL для редиректа
-        return NextResponse.redirect(url, 302);
-    }
-
     try {
+        const authHeader = req.headers.get('Authorization');
+
+        if (!authHeader) {
+            const url = new URL('/login', req.url);
+            return NextResponse.redirect(url, 302);
+        }
+
+        const token = authHeader.split(' ')[1];
+
+        if (!token) {
+            const url = new URL('/login', req.url);
+            return NextResponse.redirect(url, 302);
+        }
+
+        // Верификация токена
+        let decoded;
+        try {
+            const { payload } = await jwtVerify(token, SECRET_KEY);
+            decoded = payload as { userId: string };
+        } catch (err) {
+            console.error('Token verification failed:', err);
+            const url = new URL('/login', req.url);
+            return NextResponse.redirect(url, 302);
+        }
+
+
         const user = await prisma.user.findUnique({
             where: { id: decoded.userId },
             include: { role: true },
         });
 
         if (!user) {
-            const url = new URL('/login', req.url); // Формируем абсолютный URL для редиректа
+            const url = new URL('/login', req.url);
             return NextResponse.redirect(url, 302);
         }
 
+        // Возвращаем данные пользователя
         return NextResponse.json({
             id: user.id,
             name: user.name,
@@ -39,8 +51,8 @@ export async function GET(req: Request) {
             role: user.role.name,
         });
     } catch (error) {
-        console.error('Error fetching user:', error);
-        const url = new URL('/login', req.url); // Формируем абсолютный URL для редиректа
+        console.error('Error processing request:', error);
+        const url = new URL('/login', req.url);
         return NextResponse.redirect(url, 302);
     }
 }
