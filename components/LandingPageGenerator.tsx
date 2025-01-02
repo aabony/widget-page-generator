@@ -54,6 +54,51 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
   <style>
     ${generateThemeCSS(theme)}
     ${pageStyles}
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      width: 300px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .card-content {
+      padding: 16px;
+    }
+    .card-content h2 {
+      font-size: 1.5rem;
+      margin: 0 0 8px;
+    }
+    .card-content p {
+      color: #666;
+      font-size: 0.9rem;
+      margin: 0 0 16px;
+    }
+    .card-content a {
+      background: #007bff;
+      color: white;
+      padding: 10px 16px;
+      text-decoration: none;
+      border-radius: 4px;
+      text-align: center;
+      display: inline-block;
+    }
+    .card-content a:hover {
+      background: #0056b3;
+    }
   </style>
 </head>
 <body>
@@ -62,24 +107,22 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
     <p>${pageConfig.subtitle}</p>
   </header>
   <div class="attention-ribbon">${pageConfig.ribbonText}</div>
-  <main>
-    <div class="card-container">
-      ${pageConfig.sections
+  <div class="card-container">
+    ${pageConfig.sections
         .map(
             (section) => `
-        <div class="card">
-          <img src="${section.imageSrc}" alt="${section.title}" />
-          <div class="card-content">
-            <h2>${section.title}</h2>
-            <h4>${section.subtitle}</h4>
-            <p>${section.description}</p>
-            <a href="${section.buttonLink}" target="_blank">${section.buttonText}</a>
-          </div>
-        </div>`
+      <div class="card">
+        <img src="${section.imageSrc}" alt="${section.title}" />
+        <div class="card-content">
+          <h2>${section.title}</h2>
+          <h4>${section.subtitle}</h4>
+          <p>${section.description}</p>
+          <a href="${section.buttonLink}" target="_blank">${section.buttonText}</a>
+        </div>
+      </div>`
         )
         .join('')}
-    </div>
-  </main>
+  </div>
   <footer>
     <p>${pageConfig.footerText}</p>
   </footer>
@@ -87,7 +130,7 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
 </html>`;
   };
 
-  const savePage = async () => {
+  const saveDealInBio = async () => {
     if (!pageConfig.dealInBioName) {
       toast.error('Please enter a Deal In Bio name');
       return;
@@ -95,9 +138,8 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
 
     setIsSaving(true);
     const html = generateHTML();
-
     try {
-      const response = await fetch('/api/savepage', {
+      const response = await fetch('/api/save-deal-in-bio', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -112,20 +154,19 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
       const data = await response.json();
 
       if (response.ok) {
-        setSaveStatus({ message: `Page saved successfully: ${data.path}`, isError: false });
-        toast.success('Page saved successfully!');
+        setSaveStatus({ message: `Page saved to ${data.path}`, isError: false });
+        toast.success('Deal In Bio page saved successfully!');
       } else {
-        setSaveStatus({ message: data.message || 'Failed to save page', isError: true });
-        toast.error(data.message || 'Failed to save page');
+        setSaveStatus({ message: data.message || 'Failed to save Deal In Bio page', isError: true });
+        toast.error(data.message || 'Failed to save Deal In Bio page');
       }
     } catch (error) {
-      setSaveStatus({ message: 'An error occurred while saving the page', isError: true });
-      toast.error('An error occurred while saving the page');
+      setSaveStatus({ message: 'An error occurred while saving the Deal In Bio page', isError: true });
+      toast.error('An error occurred while saving the Deal In Bio page');
     } finally {
       setIsSaving(false);
     }
   };
-
 
   const downloadHTML = () => {
     const html = generateHTML();
@@ -175,11 +216,11 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
               Download HTML
             </button>
             <button
-                onClick={savePage}
+                onClick={saveDealInBio}
                 disabled={isSaving}
                 className={`flex-1 ${isSaving ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'} text-white px-4 py-2 rounded-lg`}
             >
-              {isSaving ? 'Saving...' : isEditing ? 'Update' : 'Save'} Page
+              {isSaving ? 'Saving...' : isEditing ? 'Update' : 'Save'} Deal In Bio Page
             </button>
           </div>
         </div>
