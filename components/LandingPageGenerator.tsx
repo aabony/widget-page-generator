@@ -130,7 +130,7 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
 </html>`;
   };
 
-  const saveDealInBio = async () => {
+  const savePage = async () => {
     if (!pageConfig.dealInBioName) {
       toast.error('Please enter a Deal In Bio name');
       return;
@@ -139,7 +139,7 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
     setIsSaving(true);
     const html = generateHTML();
     try {
-      const response = await fetch('/api/save-deal-in-bio', {
+      const response = await fetch('/api/savepage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -154,15 +154,15 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
       const data = await response.json();
 
       if (response.ok) {
-        setSaveStatus({ message: `Page saved to ${data.path}`, isError: false });
-        toast.success('Deal In Bio page saved successfully!');
+        setSaveStatus({ message: `Page saved successfully: ${data.path}`, isError: false });
+        toast.success('Page saved successfully!');
       } else {
-        setSaveStatus({ message: data.message || 'Failed to save Deal In Bio page', isError: true });
-        toast.error(data.message || 'Failed to save Deal In Bio page');
+        setSaveStatus({ message: data.message || 'Failed to save page', isError: true });
+        toast.error(data.message || 'Failed to save page');
       }
     } catch (error) {
-      setSaveStatus({ message: 'An error occurred while saving the Deal In Bio page', isError: true });
-      toast.error('An error occurred while saving the Deal In Bio page');
+      setSaveStatus({ message: 'An error occurred while saving the page', isError: true });
+      toast.error('An error occurred while saving the page');
     } finally {
       setIsSaving(false);
     }
@@ -216,11 +216,11 @@ export default function LandingPageGenerator({ initialConfig, isEditing = false 
               Download HTML
             </button>
             <button
-                onClick={saveDealInBio}
+                onClick={savePage}
                 disabled={isSaving}
                 className={`flex-1 ${isSaving ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'} text-white px-4 py-2 rounded-lg`}
             >
-              {isSaving ? 'Saving...' : isEditing ? 'Update' : 'Save'} Deal In Bio Page
+              {isSaving ? 'Saving...' : isEditing ? 'Update' : 'Save'} Page
             </button>
           </div>
         </div>

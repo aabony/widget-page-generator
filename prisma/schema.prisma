@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id    String   @id @default(auto()) @map("_id") @db.ObjectId
+  name  String   @unique
+  users User[]
+
+  @@map("roles")
+}
+
+model User {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  email    String   @unique
+  password String
+  roleId   String
+  role     Role     @relation(fields: [roleId], references: [id])
+  pages       Page[]
+  @@map("users")
+}
+model Page {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String   @unique
+  uuid       String   @unique
+  title      String
+  subtitle   String
+  ribbonText String
+  footerText String
+  profilePic String?
+  theme      String
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  offers     Offer[]  // Связанные офферы
+}
+
+model Offer {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  subtitle    String?
+  description String
+  imageSrc    String
+  buttonText  String
+  buttonLink  String
+  pageId      String
+  page        Page   @relation(fields: [pageId], references: [id], onDelete: Cascade) // Каскадное удаление
+}
