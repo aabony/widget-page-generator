@@ -42,7 +42,7 @@ export async function GET(req: Request) {
 
         const formattedPages = pages.map((page) => ({
             name: page.name,
-            url: `${process.env.NEXT_PUBLIC_BASE_URL}/pages/${page.uuid}`,
+            url: `/pages/${page.uuid}`,
             lastModified: page.updatedAt.toISOString(),
         }));
 
