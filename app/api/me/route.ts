@@ -21,7 +21,7 @@ export async function GET(req: Request) {
             return NextResponse.redirect(url, 302);
         }
 
-        // Верификация токена
+
         let decoded;
         try {
             const { payload } = await jwtVerify(token, SECRET_KEY);

@@ -1,14 +1,11 @@
-// scripts/seed.js
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
-    // Подключение к базе данных
     await prisma.$connect();
 
-    // Создаём роли
     const roles = [
         { name: 'admin' },
         { name: 'user' },
@@ -24,9 +21,8 @@ async function main() {
 
     console.log('Roles created or verified.');
 
-    // Создаём администратора
-    const adminEmail = 'admin@example.com'; // Измените на желаемый email
-    const adminPassword = 'admin123'; // Задайте надёжный пароль
+    const adminEmail = 'admin@example.com';
+    const adminPassword = 'admin123';
 
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
