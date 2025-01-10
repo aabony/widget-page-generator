@@ -67,10 +67,28 @@ export default function EditPage({ params }: EditPageProps) {
     .card-content p { color: #666; font-size: 0.9rem; margin: 0 0 16px; }
     .card-content a { background: #007bff; color: white; padding: 10px 16px; text-decoration: none; border-radius: 4px; text-align: center; display: inline-block; }
     .card-content a:hover { background: #0056b3; }
+       .image-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 30vh; 
+        }
+        .header-img {
+          width: 250px;
+          height: 250px;
+          border-radius: 50%;
+          object-fit: cover;
+          margin-bottom: 2rem;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+          border: 5px solid var(--social-links-background,  #3498db);
+        }
   </style>
 </head>
 <body>
   <header>
+     <div class="image-container">
+                    <img src='${pageConfig.profilePic}' alt="Profile" class="header-img"/>
+                </div>
     <h1>${pageConfig.title}</h1>
     <p>${pageConfig.subtitle}</p>
   </header>
