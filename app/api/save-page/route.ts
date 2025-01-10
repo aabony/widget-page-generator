@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
-import {jwtVerify} from "jose";
+import { jwtVerify } from 'jose';
 
 const prisma = new PrismaClient();
 
@@ -23,6 +23,7 @@ export async function POST(req: Request) {
         if (!name) {
             return NextResponse.json({ message: 'Page name is required' }, { status: 400 });
         }
+
         const SECRET = new TextEncoder().encode(process.env.SECRET);
         const cookies = req.headers.get('cookie') || '';
         const tokenCookie = cookies
@@ -34,16 +35,13 @@ export async function POST(req: Request) {
         }
 
         const token = tokenCookie.split('=')[1];
-            const { payload } = await jwtVerify(token, SECRET);
-
+        const { payload } = await jwtVerify(token, SECRET);
 
         const userId = payload.userId;
         if (!userId) {
             return NextResponse.json({ message: 'User ID not found in token' }, { status: 401 });
         }
 
-
-        // @ts-ignore
         const page = await prisma.page.upsert({
             where: { name },
             update: {
@@ -57,12 +55,14 @@ export async function POST(req: Request) {
                 offers: {
                     deleteMany: {},
                     create: offers.map((offer: any) => ({
-                        title: offer.title,
-                        subtitle: offer.subtitle,
-                        description: offer.description,
-                        imageSrc: offer.imageSrc,
-                        buttonText: offer.buttonText,
-                        buttonLink: offer.buttonLink,
+                        title: offer.title || '',
+                        subtitle: offer.subtitle || '',
+                        description: offer.description || '',
+                        imageSrc: offer.imageSrc || '',
+                        buttonText: offer.buttonText || '',
+                        buttonLink: offer.buttonLink || '',
+                        type: offer.type,
+                        widgetCode: offer.type === 'widget' ? offer.widgetCode : null,
                     })),
                 },
             },
@@ -81,12 +81,14 @@ export async function POST(req: Request) {
                 },
                 offers: {
                     create: offers.map((offer: any) => ({
-                        title: offer.title,
-                        subtitle: offer.subtitle,
-                        description: offer.description,
-                        imageSrc: offer.imageSrc,
-                        buttonText: offer.buttonText,
-                        buttonLink: offer.buttonLink,
+                        title: offer?.title || '',
+                        subtitle: offer.subtitle || '',
+                        description: offer.description || '',
+                        imageSrc: offer.imageSrc || '',
+                        buttonText: offer.buttonText || '',
+                        buttonLink: offer.buttonLink || '',
+                        type: offer.type,
+                        widgetCode: offer.type === 'widget' ? offer.widgetCode : null,
                     })),
                 },
             },
