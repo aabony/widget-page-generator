@@ -178,7 +178,14 @@ export default function PageView() {
             </div>
             <div className="attention-ribbon">{pageConfig.ribbonText}</div>
             <div className="card-container">
-                {pageConfig.offers.map((offer: any) => (
+                {pageConfig.offers.map((offer: any) =>
+                    offer.type === 'widget' ? (
+                        <div
+                            key={offer.id}
+                            dangerouslySetInnerHTML={{ __html: offer.widgetCode }}
+                        />
+                    ) : (
+
                     <div key={offer.id} className="card">
                         <img src={offer.imageSrc} alt={offer.title} />
                         <div className="card-content">
