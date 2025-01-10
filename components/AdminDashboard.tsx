@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 interface DealInBioPage {
   name: string;
@@ -17,7 +18,7 @@ export default function AdminDashboard() {
   const [pagesPerPage] = useState(10);
   const [sortBy, setSortBy] = useState<'name' | 'lastModified'>('lastModified');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-
+  const  router = useRouter()
   useEffect(() => {
     fetchPages();
   }, []);
@@ -93,7 +94,11 @@ export default function AdminDashboard() {
 
   return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-4">Deal In Bio Pages</h1>
+        <div className="flex justify-between">
+          <h1 className="text-2xl font-bold mb-4">Deal In Bio Pages</h1>
+          <button onClick={()=> router.push('/')} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Create new page</button>
+        </div>
+
         <div className="mb-4">
           <input
               type="text"

@@ -31,6 +31,42 @@ export default function PageView() {
         fetchPageData();
     }, [uuid]);
 
+    const executeWidgetScripts = () => {
+        pageConfig.offers
+            .filter((offer: any) => offer.type === 'widget' && offer.widgetCode)
+            .forEach((offer: any) => {
+                const container = document.createElement('div');
+                container.innerHTML = offer.widgetCode;
+
+                // Добавляем контейнер в DOM временно
+                document.body.appendChild(container);
+
+                // Извлекаем все <script>-теги
+                const scripts = container.querySelectorAll('script');
+                scripts.forEach((oldScript) => {
+                    const newScript = document.createElement('script');
+
+                    // Копируем все атрибуты
+                    Array.from(oldScript.attributes).forEach((attr) =>
+                        newScript.setAttribute(attr.name, attr.value)
+                    );
+
+                    // Оборачиваем содержимое скрипта в IIFE
+                    newScript.textContent = `(function() { ${oldScript.textContent} })();`;
+
+                    // Добавляем новый скрипт в DOM
+                    document.body.appendChild(newScript);
+                });
+
+                // Удаляем временный контейнер
+                document.body.removeChild(container);
+            });
+    };
+    useEffect(() => {
+        if (pageConfig) {
+            executeWidgetScripts();
+        }
+    }, [pageConfig]);
     if (!pageConfig) {
         return <p>Loading...</p>;
     }
@@ -52,15 +88,7 @@ export default function PageView() {
           color: var(--ribbon-color, #000);
           margin: 20px 0;
         }
-            .header-img {
-    width: 250px;
-    height: 250px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 2rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    border: 5px solid var(--social-links-background,  #3498db);
-}
+
         .card-container {
           display: flex;
           flex-wrap: wrap;
@@ -140,6 +168,15 @@ export default function PageView() {
           align-items: center;
           height: 30vh; 
         }
+        .header-img {
+          width: 250px;
+          height: 250px;
+          border-radius: 50%;
+          object-fit: cover;
+          margin-bottom: 2rem;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+          border: 5px solid var(--social-links-background,  #3498db);
+        }
         .social-links a:hover {
           background: rgba(255, 255, 255, 0.4);
         }
@@ -178,7 +215,15 @@ export default function PageView() {
             </div>
             <div className="attention-ribbon">{pageConfig.ribbonText}</div>
             <div className="card-container">
-                {pageConfig.offers.map((offer: any) => (
+                {pageConfig.offers.map((offer: any) =>
+                    offer.type === 'widget' ? (
+                        <div
+                            className="pl-10"
+                            key={offer.id}
+                            dangerouslySetInnerHTML={{ __html: offer.widgetCode }}
+                        />
+                    ) : (
+
                     <div key={offer.id} className="card">
                         <img src={offer.imageSrc} alt={offer.title} />
                         <div className="card-content">

@@ -56,5 +56,7 @@ model Offer {
   buttonText  String
   buttonLink  String
   pageId      String
+  type        String
+  widgetCode   String?
   page        Page   @relation(fields: [pageId], references: [id], onDelete: Cascade) // Каскадное удаление
 }
